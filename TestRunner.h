@@ -9,7 +9,7 @@ class TestRunner
 {
 public:
     TestRunner();
-    void Go(size_t numberOfThreads, TestMethod method, int64_t complexity);
+    void Go(const TestParameters& parameters);
     bool IsRunning() const;
     void Stop();
 

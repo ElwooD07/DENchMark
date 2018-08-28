@@ -8,11 +8,11 @@ TestObserver::TestObserver(QObject *parent, TestRunner* runner)
     assert(m_runner);
 }
 
-Results TestObserver::GetResults() const
+TestResults TestObserver::GetResults() const
 {
     assert(!m_runner->IsRunning());
 
-    Results results;
+    TestResults results;
     for (const ThreadInfo& threadInfo : m_runner->GetThreadsInfo())
     {
         results.push_back(threadInfo.finish - threadInfo.start);

@@ -17,7 +17,6 @@ MainWindow::MainWindow(QWidget *parent)
     , m_ui(new Ui::MainWindow)
     , m_processorsCount(GetProcessorsCount())
     , m_observer(nullptr)
-    , m_burnEnabled(false)
 {
     m_observer = new TestObserver(this, &m_testRunner);
     connect(m_observer, &QThread::finished, this, &MainWindow::OnTestFinished);
@@ -25,16 +24,18 @@ MainWindow::MainWindow(QWidget *parent)
     m_ui->setupUi(this);
     m_ui->lblProgramName->setText(tr("%1 v%2.%3").arg(PROGRAM_NAME).arg(VER_MAJOR).arg(VER_MINOR));
     m_ui->lblThreads->setText(tr("Threads: %1").arg(m_processorsCount));
-    m_ui->chkBurn->setChecked(m_burnEnabled);
 }
 
 void MainWindow::on_btnGo_clicked()
 {
+    m_ui->listWidget->clear();
+    m_ui->progressBar->setValue(0);
     try
     {
-        m_testRunner.Go(m_processorsCount, DefineTestMethod(), utils::CalculateComplexity(m_burnEnabled));
-        SetControlsEnabled(false);
-        m_observer->start();
+        m_ui->lblScore->setText("0");
+        m_ui->lblPerThread->setText("0");
+        m_stateKeeper.TestStarted(DEFAULT_STAGES_COUNT, m_ui->chkBurn->isChecked());
+        RunSingleTest();
     }
     catch(const std::exception& ex)
     {
@@ -42,39 +43,40 @@ void MainWindow::on_btnGo_clicked()
     }
 }
 
-void MainWindow::on_chkBurn_stateChanged(Qt::CheckState state)
-{
-    m_burnEnabled = (state == Qt::Checked);
-}
-
 void MainWindow::OnTestFinished()
 {
-    Results results = m_observer->GetResults();
-    m_ui->listWidget->clear();
+    TestResults results = m_observer->GetResults();
 
-    Results::value_type average = 0;
-    Results::value_type max = 0;
+    m_ui->listWidget->addItem(tr("Stage %1/%2").arg(m_stateKeeper.CurrentStage() + 1).arg(m_stateKeeper.GetStagesCount()));
     for (size_t i = 0; i < results.size(); ++i)
     {
-        m_ui->listWidget->addItem(tr("Thread %1: %2").arg(i).arg(results.at(i)));
-        average += results.at(i);
-        if (max < results.at(i))
-        {
-            max = results.at(i);
-        }
+        float resultFormated = static_cast<float>(results.at(i)) / 1000;
+        m_ui->listWidget->addItem(QString("  ") + tr("Thread %1: %2").arg(i).arg(resultFormated));
     }
-    average /= results.size();
+    m_stateKeeper.SubmitResults(m_observer);
 
-    m_ui->lblTimeElapsed->setText(QString::number(max));
-    m_ui->lblScore->setText(QString::number(3000000 / average));
-
-    SetControlsEnabled(true);
+    UpdateTimeElapsed();
+    UpdateTheScore();
+    if (m_stateKeeper.CurrentStage() < m_stateKeeper.GetStagesCount())
+    {
+        int progress = static_cast<int>((static_cast<double>(m_stateKeeper.CurrentStage()) / m_stateKeeper.GetStagesCount()) * 100);
+        m_ui->progressBar->setValue(progress);
+        m_ui->progressBar->update();
+        RunSingleTest();
+    }
+    else
+    {
+        m_ui->progressBar->setValue(m_ui->progressBar->maximum());
+        SetControlsEnabled(true);
+    }
 }
 
 void MainWindow::SetControlsEnabled(bool enabled)
 {
     m_ui->btnGo->setEnabled(enabled);
     m_ui->chkBurn->setEnabled(enabled);
+    m_ui->optCPU->setEnabled(enabled);
+    m_ui->optMemory->setEnabled(enabled);
 }
 
 TestMethod MainWindow::DefineTestMethod() const
@@ -93,4 +95,29 @@ TestMethod MainWindow::DefineTestMethod() const
         method = TestMethodCPUandMemory;
     }
     return method;
+}
+
+void MainWindow::RunSingleTest()
+{
+    m_testRunner.Go(TestParameters { m_processorsCount, DefineTestMethod(), utils::CalculateComplexity(), m_ui->chkBurn->isChecked() } );
+    SetControlsEnabled(false);
+    m_observer->start();
+}
+
+void MainWindow::UpdateTimeElapsed()
+{
+    TestResults times = m_stateKeeper.GetTimesElapsed();
+    TestResult timeElapsed = 0;
+    for (auto time : times)
+    {
+        timeElapsed += time;
+    }
+    m_ui->lblTimeElapsed->setText(tr("%1 seconds").arg(static_cast<float>(timeElapsed) / 1000));
+}
+
+void MainWindow::UpdateTheScore()
+{
+    auto averageResults = m_stateKeeper.GetAverageResults();
+    m_ui->lblScore->setText(QString::number(utils::CalculateTheScoreMultithreaded(averageResults, m_processorsCount)));
+    m_ui->lblPerThread->setText(QString::number(utils::CalculateTheScorePerThread(averageResults)));
 }

@@ -4,6 +4,8 @@
 
 namespace utils
 {
-    Complexity CalculateComplexity(bool burn);
+    Complexity CalculateComplexity();
     double GetTestMethodComplexityRatio(TestMethod method);
+    TheScore CalculateTheScorePerThread(const TestResults& averageResults);
+    TheScore CalculateTheScoreMultithreaded(const TestResults& averageResults, size_t numberOfThreads);
 }

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>431</width>
     <height>348</height>
    </rect>
   </property>
@@ -28,7 +28,7 @@
      <rect>
       <x>-1</x>
       <y>-1</y>
-      <width>401</width>
+      <width>434</width>
       <height>349</height>
      </rect>
     </property>
@@ -148,7 +148,7 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>75</width>
+           <width>120</width>
            <height>0</height>
           </size>
          </property>
@@ -161,42 +161,72 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="lblScoreCaption">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <layout class="QGridLayout" name="gridLayout">
+         <property name="leftMargin">
+          <number>0</number>
          </property>
-         <property name="text">
-          <string>The Score:</string>
+         <property name="topMargin">
+          <number>0</number>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="lblScore">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>75</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">font-weight: bold;</string>
-         </property>
-         <property name="text">
-          <string>0</string>
-         </property>
-        </widget>
+         <item row="0" column="0">
+          <widget class="QLabel" name="lblScoreCaption">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>The Score:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="lblScore">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">font-weight: bold;</string>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="lblPerThreadCaption">
+           <property name="text">
+            <string>Per thread:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="lblPerThread">
+           <property name="styleSheet">
+            <string notr="true">font-weight: bolder;</string>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
@@ -217,7 +247,7 @@
           <enum>Qt::Vertical</enum>
          </property>
          <property name="invertedAppearance">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
         </widget>
        </item>

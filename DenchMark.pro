@@ -30,7 +30,8 @@ SOURCES += \
     TestObserver.cpp \
     MainWindow.cpp \
     TestRunner.cpp \
-    ComplexityAndScoreUtils.cpp
+    ComplexityAndScoreUtils.cpp \
+    TestStateKeeper.cpp
 
 HEADERS += \
     TestRoutines.h \
@@ -39,7 +40,8 @@ HEADERS += \
     MainWindow.h \
     TestRunner.h \
     ComplexityAndScoreUtils.h \
-    TestInfo.h
+    TestInfo.h \
+    TestStateKeeper.h
 
 FORMS += \
         mainwindow.ui

@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <vector>
 
 enum TestMethod
 {
@@ -10,6 +11,15 @@ enum TestMethod
 };
 
 using Complexity = uint64_t;
+
+struct TestParameters
+{
+    size_t numberOfThreads = 0;
+    TestMethod method = TestMethodUnknown;
+    Complexity baseComplexity = 0;
+    bool burnMode = false;
+};
+
 using Progress = float; // from 0.0 to 1.0
 
 struct ThreadInfo
@@ -36,3 +46,7 @@ struct ThreadInfo
 
     Progress progress = 0.0;
 };
+
+using TestResult = uint64_t;
+using TestResults = std::vector<uint64_t>;
+using TheScore = uint64_t;
