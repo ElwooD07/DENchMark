@@ -1,5 +1,5 @@
-#include "testobserver.h"
-#include <assert.h>
+#include "stdafx.h"
+#include "TestObserver.h"
 
 TestObserver::TestObserver(QObject *parent, TestRunner* runner)
     : QThread(parent)

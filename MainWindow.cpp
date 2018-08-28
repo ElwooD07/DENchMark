@@ -1,6 +1,6 @@
-#include "mainwindow.h"
-#include <QMessageBox>
-#include <Windows.h>
+#include "stdafx.h"
+#include "MainWindow.h"
+#include "ComplexityAndScoreUtils.h"
 
 namespace
 {
@@ -17,40 +17,34 @@ MainWindow::MainWindow(QWidget *parent)
     , m_ui(new Ui::MainWindow)
     , m_processorsCount(GetProcessorsCount())
     , m_observer(nullptr)
+    , m_burnEnabled(false)
 {
     m_observer = new TestObserver(this, &m_testRunner);
     connect(m_observer, &QThread::finished, this, &MainWindow::OnTestFinished);
 
     m_ui->setupUi(this);
+    m_ui->lblProgramName->setText(tr("%1 v%2.%3").arg(PROGRAM_NAME).arg(VER_MAJOR).arg(VER_MINOR));
     m_ui->lblThreads->setText(tr("Threads: %1").arg(m_processorsCount));
+    m_ui->chkBurn->setChecked(m_burnEnabled);
 }
 
 void MainWindow::on_btnGo_clicked()
 {
     try
     {
-        TestMethod method = CPU;
-        if (m_ui->optMemory->isChecked())
-        {
-            method = Memory;
-        }
-        else if (m_ui->optCPUandMemory->isChecked())
-        {
-            method = CPUandMemory;
-        }
-        size_t complexity = 100000;
-        if (m_ui->chkBurn->isChecked())
-        {
-            complexity *= 4;
-        }
-        m_testRunner.Go(m_processorsCount, method, complexity);
-        m_ui->btnGo->setEnabled(false);
+        m_testRunner.Go(m_processorsCount, DefineTestMethod(), utils::CalculateComplexity(m_burnEnabled));
+        SetControlsEnabled(false);
         m_observer->start();
     }
     catch(const std::exception& ex)
     {
         QMessageBox::warning(this, tr("Start test"), tr("Unable to start the test: %1").arg(ex.what()));
     }
+}
+
+void MainWindow::on_chkBurn_stateChanged(Qt::CheckState state)
+{
+    m_burnEnabled = (state == Qt::Checked);
 }
 
 void MainWindow::OnTestFinished()
@@ -73,5 +67,30 @@ void MainWindow::OnTestFinished()
 
     m_ui->lblTimeElapsed->setText(QString::number(max));
     m_ui->lblScore->setText(QString::number(3000000 / average));
-    m_ui->btnGo->setEnabled(true);
+
+    SetControlsEnabled(true);
+}
+
+void MainWindow::SetControlsEnabled(bool enabled)
+{
+    m_ui->btnGo->setEnabled(enabled);
+    m_ui->chkBurn->setEnabled(enabled);
+}
+
+TestMethod MainWindow::DefineTestMethod() const
+{
+    TestMethod method = TestMethodUnknown;
+    if (m_ui->optCPU->isChecked())
+    {
+        method = TestMethodCPU;
+    }
+    if (m_ui->optMemory->isChecked())
+    {
+        method = TestMethodMemory;
+    }
+    else if (m_ui->optCPUandMemory->isChecked())
+    {
+        method = TestMethodCPUandMemory;
+    }
+    return method;
 }

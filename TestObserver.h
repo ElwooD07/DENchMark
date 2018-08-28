@@ -1,5 +1,5 @@
 #pragma once
-#include "testrunner.h"
+#include "TestRunner.h"
 #include <QThread>
 #include <vector>
 

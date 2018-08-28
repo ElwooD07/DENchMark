@@ -25,16 +25,27 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
-    testrunner.cpp \
-    testobserver.cpp
+    TestRoutines.cpp \
+    stdafx.cpp \
+    TestObserver.cpp \
+    MainWindow.cpp \
+    TestRunner.cpp \
+    ComplexityAndScoreUtils.cpp
 
 HEADERS += \
-        mainwindow.h \
-    testrunner.h \
-    testobserver.h
+    TestRoutines.h \
+    stdafx.h \
+    TestObserver.h \
+    MainWindow.h \
+    TestRunner.h \
+    ComplexityAndScoreUtils.h \
+    TestInfo.h
 
 FORMS += \
         mainwindow.ui
+
+CONFIG += precompile_header
+PRECOMPILED_HEADER = stdafx.h
+PRECOMPILED_SOURCE = stdafx.cpp
 
 win32: LIBS += -lUser32

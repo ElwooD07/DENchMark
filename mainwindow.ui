@@ -63,7 +63,7 @@
           <string notr="true">color: rgb(220, 120, 50);</string>
          </property>
          <property name="text">
-          <string>DENchMark CPP v0.0</string>
+          <string/>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
