@@ -1,7 +1,7 @@
 #pragma once
 #include "TestInfo.h"
 
-using TestStage = uint16_t;
+using TimesElapsed = std::vector<TimeElapsed>;
 
 class TestObserver;
 class TestStateKeeper
@@ -11,13 +11,13 @@ public:
     void TestStarted(TestStage stages, bool burnIt);
     TestStage CurrentStage() const;
     TestStage GetStagesCount() const;
-    void SubmitResults(TestObserver* observer);
-    TestResults GetAverageResults() const;
-    TestResults GetTimesElapsed() const;
+    void SubmitSingleTestResult(const SingleTestResult& result);
+    StagesAverageResults GetAverageResults() const;
+    TimesElapsed GetTimesElapsed() const;
 
 private:
     TestStage m_stagesTotal;
     TestStage m_currentStage;
-    std::vector<TestResults> m_allResults;
+    std::vector<SingleTestResult> m_allResults;
 };
 

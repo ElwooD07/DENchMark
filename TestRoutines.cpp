@@ -13,7 +13,7 @@ namespace
 DWORD ThreadProcCPU(PVOID parameters)
 {
     ThreadInfo& info = GetThreadInfo(parameters);
-    info.start = ::GetTickCount64();
+    info.startTimestamp = ::GetTickCount64();
 
     size_t primesFound = 1; // 2 is already counted
     for (Complexity i = 2; i < info.complexity && !info.stop; ++i)
@@ -33,7 +33,7 @@ DWORD ThreadProcCPU(PVOID parameters)
         }
     }
 
-    info.finish = ::GetTickCount64();
+    info.finishTimestamp = ::GetTickCount64();
     return 0;
 }
 
@@ -41,16 +41,16 @@ DWORD ThreadProcMemory(PVOID parameters)
 { // Implements Erythrophene Sieve
     ThreadInfo& info = GetThreadInfo(parameters);
     std::vector<size_t> grid(info.complexity + 1);
-    info.start = ::GetTickCount64();
+    info.startTimestamp = ::GetTickCount64();
 
     size_t primes = 0;
     const size_t gridSize = grid.size();
-    for (int i = 0; i < gridSize && !info.stop; i++)
+    for (int i = 0; i < gridSize && !info.stop; ++i)
     {
         grid[i] = i;
     }
 
-    for (size_t p = 2; p < gridSize && !info.stop; p++)
+    for (size_t p = 2; p < gridSize && !info.stop; ++p)
     {
         if (grid[p] != 0)
         {
@@ -62,13 +62,13 @@ DWORD ThreadProcMemory(PVOID parameters)
         }
     }
 
-    info.finish = ::GetTickCount64();
+    info.finishTimestamp = ::GetTickCount64();
     return 0;
 }
 
 DWORD ThreadProcCPUandMemory(PVOID parameters)
 {
-    GetThreadInfo(parameters).finish = 100500;
+    GetThreadInfo(parameters).finishTimestamp = 100500;
     // TODO
     return 0;
 }

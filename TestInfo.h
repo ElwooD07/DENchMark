@@ -21,6 +21,7 @@ struct TestParameters
 };
 
 using Progress = float; // from 0.0 to 1.0
+using TimeElapsed = int64_t;
 
 struct ThreadInfo
 {
@@ -33,20 +34,25 @@ struct ThreadInfo
     {
         stop = right.stop;
         complexity = right.complexity;
-        start = right.start;
-        finish = right.finish;
+        startTimestamp = right.startTimestamp;
+        finishTimestamp = right.finishTimestamp;
         return *this;
     }
 
     volatile bool& stop;
     Complexity complexity;
 
-    int64_t start = 0;
-    int64_t finish = 0;
+    int64_t startTimestamp = 0;
+    int64_t finishTimestamp = 0;
 
     Progress progress = 0.0;
 };
 
-using TestResult = uint64_t;
-using TestResults = std::vector<uint64_t>;
+using SingleThreadResult = uint64_t;
+using SingleTestResult = std::vector<SingleThreadResult>;
+
+using StageAverageResult = SingleThreadResult;
+using StagesAverageResults = std::vector<StageAverageResult>;
+
+using TestStage = uint16_t;
 using TheScore = uint64_t;

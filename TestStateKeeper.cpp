@@ -28,44 +28,29 @@ TestStage TestStateKeeper::GetStagesCount() const
     return m_stagesTotal;
 }
 
-void TestStateKeeper::SubmitResults(TestObserver* observer)
+void TestStateKeeper::SubmitSingleTestResult(const SingleTestResult& result)
 {
-    assert(observer && "You've forget something important");
-    m_allResults.push_back(observer->GetResults());
+    m_allResults.push_back(result);
     ++m_currentStage;
 }
 
-TestResults TestStateKeeper::GetAverageResults() const
+StagesAverageResults TestStateKeeper::GetAverageResults() const
 {
-    TestResults averages;
-    for (TestResults results : m_allResults)
+    StagesAverageResults averages;
+    for (SingleTestResult stageResults : m_allResults)
     {
-        TestResult average = 0;
-        for (size_t i = 0; i < results.size(); ++i)
-        {
-            average += results.at(i);
-        }
-        averages.push_back(average / results.size());
+        StageAverageResult average = std::accumulate(stageResults.begin(), stageResults.end(), 0);
+        averages.push_back(average / stageResults.size());
     }
-
     return averages;
 }
 
-TestResults TestStateKeeper::GetTimesElapsed() const
+TimesElapsed TestStateKeeper::GetTimesElapsed() const
 {
-    TestResults timesElapsed;
-    for (TestResults results : m_allResults)
+    TimesElapsed timesElapsed;
+    for (SingleTestResult results : m_allResults) // The entities of test results and time elapsed are similar for now.
     {
-        TestResult max = 0;
-        for (size_t i = 0; i < results.size(); ++i)
-        {
-            if (max < results.at(i))
-            {
-                max = results.at(i);
-            }
-        }
-        timesElapsed.push_back(max);
+        timesElapsed.push_back(*std::max_element(results.begin(), results.end()));
     }
-
     return timesElapsed;
 }

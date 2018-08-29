@@ -24,24 +24,15 @@ double utils::GetTestMethodComplexityRatio(TestMethod method)
     }
 }
 
-TheScore utils::CalculateTheScorePerThread(const TestResults& averageResults)
+TheScore utils::CalculateTheScorePerThread(const StagesAverageResults& averageResults)
 {
-    TestResult average = 0;
-    for (auto singleAverage : averageResults)
-    {
-       average += singleAverage;
-    }
+    SingleThreadResult average = std::accumulate(averageResults.begin(), averageResults.end(), 0);
     average /= averageResults.size();
 
     return SCORE_STANDARD_DIVIDEND / average;
 }
 
-TheScore utils::CalculateTheScoreMultithreaded(const TestResults& averageResults, size_t numberOfThreads)
+TheScore utils::CalculateTheScoreMultithreaded(const StagesAverageResults& averageResults, size_t numberOfThreads)
 {
-    TestResult total = 0;
-    for (auto singleAverage : averageResults)
-    {
-       total += singleAverage;
-    }
-    return total;
+    return CalculateTheScorePerThread(averageResults) * numberOfThreads;
 }

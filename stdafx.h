@@ -5,6 +5,8 @@
 #include <Windows.h>
 
 #include <vector>
+#include <algorithm>
+#include <iterator>
 #include <mutex>
 #include <stdint.h>
 #include <assert.h>

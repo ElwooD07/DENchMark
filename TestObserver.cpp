@@ -8,15 +8,13 @@ TestObserver::TestObserver(QObject *parent, TestRunner* runner)
     assert(m_runner);
 }
 
-TestResults TestObserver::GetResults() const
+SingleTestResult TestObserver::GetSingleTestResult() const
 {
     assert(!m_runner->IsRunning());
 
-    TestResults results;
-    for (const ThreadInfo& threadInfo : m_runner->GetThreadsInfo())
-    {
-        results.push_back(threadInfo.finish - threadInfo.start);
-    }
+    SingleTestResult results;
+    std::transform(m_runner->GetThreadsInfo().begin(), m_runner->GetThreadsInfo().end(), std::back_inserter(results),
+                   [](const ThreadInfo& threadInfo) { return threadInfo.finishTimestamp - threadInfo.startTimestamp; } );
     return results;
 }
 

@@ -80,7 +80,7 @@ bool TestRunner::IsRunning() const
 {
     for (const ThreadInfo& threadInfo : m_threadsInfo)
     {
-        if (threadInfo.finish == 0)
+        if (threadInfo.finishTimestamp == 0)
         {
             return true;
         }

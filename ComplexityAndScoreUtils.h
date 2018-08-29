@@ -6,6 +6,6 @@ namespace utils
 {
     Complexity CalculateComplexity();
     double GetTestMethodComplexityRatio(TestMethod method);
-    TheScore CalculateTheScorePerThread(const TestResults& averageResults);
-    TheScore CalculateTheScoreMultithreaded(const TestResults& averageResults, size_t numberOfThreads);
+    TheScore CalculateTheScorePerThread(const StagesAverageResults &averageResults);
+    TheScore CalculateTheScoreMultithreaded(const StagesAverageResults& averageResults, size_t numberOfThreads);
 }
