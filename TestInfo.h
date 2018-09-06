@@ -42,16 +42,23 @@ struct ThreadInfo
     volatile bool& stop;
     Complexity complexity;
 
-    int64_t startTimestamp = 0;
-    int64_t finishTimestamp = 0;
+    uint64_t startTimestamp = 0;
+    uint64_t finishTimestamp = 0;
+    std::string errorText;
 
     Progress progress = 0.0;
 };
 
-using SingleThreadResult = uint64_t;
+using Duration = uint64_t;
+struct SingleThreadResult
+{
+    Duration duration;
+    std::string error;
+};
+
 using SingleTestResult = std::vector<SingleThreadResult>;
 
-using StageAverageResult = SingleThreadResult;
+using StageAverageResult = Duration;
 using StagesAverageResults = std::vector<StageAverageResult>;
 
 using TestStage = uint16_t;

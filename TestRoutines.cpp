@@ -13,57 +13,75 @@ namespace
 DWORD ThreadProcCPU(PVOID parameters)
 {
     ThreadInfo& info = GetThreadInfo(parameters);
-    info.startTimestamp = ::GetTickCount64();
 
-    size_t primesFound = 1; // 2 is already counted
-    for (Complexity i = 2; i < info.complexity && !info.stop; ++i)
+    try
     {
-        bool isPrime = false;
-        for (Complexity j = 2; j < i && !info.stop; ++j)
+        info.startTimestamp = ::GetTickCount64();
+
+        size_t primesFound = 1; // 2 is already counted
+        for (Complexity i = 2; i < info.complexity && !info.stop; ++i)
         {
-            if (i % j == 0)
+            bool isPrime = false;
+            for (Complexity j = 2; j < i && !info.stop; ++j)
             {
-                break;
+                if (i % j == 0)
+                {
+                    break;
+                }
+            }
+
+            if (isPrime)
+            {
+                ++primesFound;
             }
         }
 
-        if (isPrime)
-        {
-            ++primesFound;
-        }
-    }
+        info.finishTimestamp = ::GetTickCount64();
+        return 0;
 
-    info.finishTimestamp = ::GetTickCount64();
-    return 0;
+    } catch (const std::exception& ex)
+    {
+        info.finishTimestamp = ::GetTickCount64();
+        info.errorText = ex.what();
+    }
+    return 1;
 }
 
 DWORD ThreadProcMemory(PVOID parameters)
 { // Implements Erythrophene Sieve
     ThreadInfo& info = GetThreadInfo(parameters);
-    std::vector<size_t> grid(info.complexity + 1);
-    info.startTimestamp = ::GetTickCount64();
 
-    size_t primes = 0;
-    const size_t gridSize = grid.size();
-    for (int i = 0; i < gridSize && !info.stop; ++i)
-    {
-        grid[i] = i;
-    }
+    try {
+        std::vector<size_t> grid(info.complexity + 1);
+        info.startTimestamp = ::GetTickCount64();
 
-    for (size_t p = 2; p < gridSize && !info.stop; ++p)
-    {
-        if (grid[p] != 0)
+        size_t primes = 0;
+        const size_t gridSize = grid.size();
+        for (size_t i = 0; i < gridSize && !info.stop; ++i)
         {
-            ++primes;
-            for (size_t j = p * p; j < gridSize; j += p)
-            { // Mark not prime numbers
-                grid[j] = 0;
+            grid[i] = i;
+        }
+
+        for (size_t p = 2; p < gridSize && !info.stop; ++p)
+        {
+            if (grid[p] != 0)
+            {
+                ++primes;
+                for (size_t j = p * p; j < gridSize; j += p)
+                { // Mark not prime numbers
+                    grid[j] = 0;
+                }
             }
         }
-    }
 
-    info.finishTimestamp = ::GetTickCount64();
-    return 0;
+        info.finishTimestamp = ::GetTickCount64();
+        return 0;
+    } catch (const std::exception& ex)
+    {
+        info.finishTimestamp = ::GetTickCount64();
+        info.errorText = ex.what();
+    }
+    return 1;
 }
 
 DWORD ThreadProcCPUandMemory(PVOID parameters)

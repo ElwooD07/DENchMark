@@ -26,7 +26,7 @@ double utils::GetTestMethodComplexityRatio(TestMethod method)
 
 TheScore utils::CalculateTheScorePerThread(const StagesAverageResults& averageResults)
 {
-    SingleThreadResult average = std::accumulate(averageResults.begin(), averageResults.end(), 0);
+    StageAverageResult average = std::accumulate(averageResults.begin(), averageResults.end(), 0);
     average /= averageResults.size();
 
     return SCORE_STANDARD_DIVIDEND / average;

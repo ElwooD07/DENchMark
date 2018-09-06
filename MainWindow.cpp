@@ -45,13 +45,20 @@ void MainWindow::on_btnGo_clicked()
 
 void MainWindow::OnTestFinished()
 {
-    SingleTestResult results = m_observer->GetSingleTestResult();
+    SingleTestResult result = m_observer->GetSingleTestResult();
 
     m_ui->listWidget->addItem(tr("Stage %1/%2").arg(m_stateKeeper.CurrentStage() + 1).arg(m_stateKeeper.GetStagesCount()));
-    for (size_t i = 0; i < results.size(); ++i)
+    for (size_t i = 0; i < result.size(); ++i)
     {
-        float resultFormated = static_cast<float>(results.at(i)) / 1000;
-        m_ui->listWidget->addItem(QString("  ") + tr("Thread %1: %2").arg(i).arg(resultFormated));
+        double threadDuration = static_cast<double>(result.at(i).duration) / 1000;
+        if (result.at(i).error.empty())
+        {
+            m_ui->listWidget->addItem(QString("  ") + tr("Thread %1: %2").arg(i).arg(threadDuration));
+        }
+        else
+        {
+            m_ui->listWidget->addItem(QString("  ") + tr("Thread %1: error \"%2\"").arg(i).arg(result.at(i).error.c_str()));
+        }
     }
     m_stateKeeper.SubmitSingleTestResult(m_observer->GetSingleTestResult());
 

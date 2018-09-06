@@ -39,7 +39,9 @@ StagesAverageResults TestStateKeeper::GetAverageResults() const
     StagesAverageResults averages;
     for (SingleTestResult stageResults : m_allResults)
     {
-        StageAverageResult average = std::accumulate(stageResults.begin(), stageResults.end(), 0);
+        StageAverageResult average = std::accumulate(stageResults.begin(), stageResults.end(), static_cast<StageAverageResult>(0),
+                                                     [](auto all, const SingleThreadResult& threadResult) { return all + threadResult.duration; }
+                                                    );
         averages.push_back(average / stageResults.size());
     }
     return averages;
@@ -48,9 +50,17 @@ StagesAverageResults TestStateKeeper::GetAverageResults() const
 TimesElapsed TestStateKeeper::GetTimesElapsed() const
 {
     TimesElapsed timesElapsed;
-    for (SingleTestResult results : m_allResults) // The entities of test results and time elapsed are similar for now.
+    for (SingleTestResult testResult : m_allResults) // The entities of test results and time elapsed are similar for now.
     {
-        timesElapsed.push_back(*std::max_element(results.begin(), results.end()));
+        TimeElapsed testTimeElapsed = 0;
+        for (const auto& threadResult : testResult)
+        {
+            if (testTimeElapsed < threadResult.duration)
+            {
+                testTimeElapsed = threadResult.duration;
+            }
+        }
+        timesElapsed.push_back(testTimeElapsed);
     }
     return timesElapsed;
 }

@@ -14,7 +14,9 @@ SingleTestResult TestObserver::GetSingleTestResult() const
 
     SingleTestResult results;
     std::transform(m_runner->GetThreadsInfo().begin(), m_runner->GetThreadsInfo().end(), std::back_inserter(results),
-                   [](const ThreadInfo& threadInfo) { return threadInfo.finishTimestamp - threadInfo.startTimestamp; } );
+                   [](const ThreadInfo& threadInfo) {
+                        return SingleThreadResult { threadInfo.finishTimestamp - threadInfo.startTimestamp, threadInfo.errorText } ;
+                    });
     return results;
 }
 
