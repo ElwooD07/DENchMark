@@ -48,6 +48,11 @@ DWORD ThreadProcCPU(PVOID parameters)
 }
 
 DWORD ThreadProcMemory(PVOID parameters)
+{
+    return 1;
+}
+
+DWORD ThreadProcCPUandMemory(PVOID parameters)
 { // Implements Erythrophene Sieve
     ThreadInfo& info = GetThreadInfo(parameters);
 
@@ -82,11 +87,4 @@ DWORD ThreadProcMemory(PVOID parameters)
         info.errorText = ex.what();
     }
     return 1;
-}
-
-DWORD ThreadProcCPUandMemory(PVOID parameters)
-{
-    GetThreadInfo(parameters).finishTimestamp = 100500;
-    // TODO
-    return 0;
 }

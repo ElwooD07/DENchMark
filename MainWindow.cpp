@@ -45,38 +45,20 @@ void MainWindow::on_btnGo_clicked()
 
 void MainWindow::OnTestFinished()
 {
-    SingleTestResult result = m_observer->GetSingleTestResult();
-
-    m_ui->listWidget->addItem(tr("Stage %1/%2").arg(m_stateKeeper.CurrentStage() + 1).arg(m_stateKeeper.GetStagesCount()));
-    for (size_t i = 0; i < result.size(); ++i)
+    try
     {
-        double threadDuration = static_cast<double>(result.at(i).duration) / 1000;
-        if (result.at(i).error.empty())
-        {
-            m_ui->listWidget->addItem(QString("  ") + tr("Thread %1: %2").arg(i).arg(threadDuration));
-        }
-        else
-        {
-            m_ui->listWidget->addItem(QString("  ") + tr("Thread %1: error \"%2\"").arg(i).arg(result.at(i).error.c_str()));
-        }
+        UpdateList();
+        UpdateTimeElapsed();
+        UpdateTheScore();
+        UpdateProgress();
     }
-    m_stateKeeper.SubmitSingleTestResult(m_observer->GetSingleTestResult());
-
-    UpdateTimeElapsed();
-    UpdateTheScore();
-
-    if (m_stateKeeper.CurrentStage() < m_stateKeeper.GetStagesCount())
-    {
-        int progress = static_cast<int>((static_cast<double>(m_stateKeeper.CurrentStage()) / m_stateKeeper.GetStagesCount()) * 100);
-        m_ui->progressBar->setValue(progress);
-        m_ui->progressBar->update();
-        RunSingleTest();
-    }
-    else
+    catch (const std::exception& ex)
     {
         m_ui->progressBar->setValue(m_ui->progressBar->maximum());
+        QMessageBox::critical(this, "Error", ex.what());
         SetControlsEnabled(true);
     }
+
 }
 
 void MainWindow::SetControlsEnabled(bool enabled)
@@ -112,16 +94,56 @@ void MainWindow::RunSingleTest()
     m_observer->start();
 }
 
+void MainWindow::UpdateList()
+{
+    SingleTestResult result = m_observer->GetSingleTestResult();
+
+    m_ui->listWidget->addItem(tr("Stage %1/%2").arg(m_stateKeeper.CurrentStage() + 1).arg(m_stateKeeper.GetStagesCount()));
+    for (size_t i = 0; i < result.size(); ++i)
+    {
+        double threadDuration = static_cast<double>(result.at(i).duration) / 1000;
+        if (result.at(i).error.empty())
+        {
+            m_ui->listWidget->addItem(QString("  ") + tr("Thread %1: %2").arg(i).arg(threadDuration));
+        }
+        else
+        {
+            m_ui->listWidget->addItem(QString("  ") + tr("Thread %1: error \"%2\"").arg(i).arg(result.at(i).error.c_str()));
+        }
+    }
+    m_stateKeeper.SubmitSingleTestResult(m_observer->GetSingleTestResult());
+}
+
 void MainWindow::UpdateTimeElapsed()
 {
     TimesElapsed times = m_stateKeeper.GetTimesElapsed();
     TimeElapsed timeElapsedTotal = std::accumulate(times.begin(), times.end(), 0);
-    m_ui->lblTimeElapsed->setText(tr("%1 seconds").arg(static_cast<float>(timeElapsedTotal) / 1000));
+    m_ui->lblTimeElapsed->setText(tr("%1 seconds").arg(static_cast<double>(timeElapsedTotal) / 1000));
 }
 
 void MainWindow::UpdateTheScore()
 {
     auto averageResults = m_stateKeeper.GetAverageResults();
+    if (averageResults.empty())
+    {
+        throw std::runtime_error("The test is over due to error");
+    }
     m_ui->lblScore->setText(QString::number(utils::CalculateTheScoreMultithreaded(averageResults, m_processorsCount)));
     m_ui->lblPerThread->setText(QString::number(utils::CalculateTheScorePerThread(averageResults)));
+}
+
+void MainWindow::UpdateProgress()
+{
+    if (m_stateKeeper.CurrentStage() < m_stateKeeper.GetStagesCount())
+    {
+        int progress = static_cast<int>((static_cast<double>(m_stateKeeper.CurrentStage()) / m_stateKeeper.GetStagesCount()) * 100);
+        m_ui->progressBar->setValue(progress);
+        m_ui->progressBar->update();
+        RunSingleTest();
+    }
+    else
+    {
+        m_ui->progressBar->setValue(m_ui->progressBar->maximum());
+        SetControlsEnabled(true);
+    }
 }

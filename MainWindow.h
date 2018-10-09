@@ -22,8 +22,10 @@ private:
     TestMethod DefineTestMethod() const;
 
     void RunSingleTest();
+    void UpdateList();
     void UpdateTimeElapsed();
     void UpdateTheScore();
+    void UpdateProgress();
     void ShowTheScore();
 
 private:

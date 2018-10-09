@@ -29,7 +29,7 @@ TheScore utils::CalculateTheScorePerThread(const StagesAverageResults& averageRe
     StageAverageResult average = std::accumulate(averageResults.begin(), averageResults.end(), 0);
     average /= averageResults.size();
 
-    return SCORE_STANDARD_DIVIDEND / average;
+    return average > 0 ? SCORE_STANDARD_DIVIDEND / average : 0;
 }
 
 TheScore utils::CalculateTheScoreMultithreaded(const StagesAverageResults& averageResults, size_t numberOfThreads)
