@@ -49,6 +49,34 @@ DWORD ThreadProcCPU(PVOID parameters)
 
 DWORD ThreadProcMemory(PVOID parameters)
 {
+    ThreadInfo& info = GetThreadInfo(parameters);
+
+    try
+    {
+        info.startTimestamp = ::GetTickCount64();
+
+        for (size_t iteration = 0; iteration < 4; ++iteration)
+        {
+            std::vector<int32_t> vec1, vec2;
+            vec1.resize(info.complexity);
+            vec2.resize(info.complexity);
+
+            for (size_t posForward = 0; posForward < vec1.size(); ++posForward)
+            {
+                auto tmp = vec1[posForward];
+                size_t posBack = vec2.size() - posForward - 1;
+                vec1[posForward] = vec2[posBack];
+                vec2[posBack] = tmp;
+            }
+        }
+
+        info.finishTimestamp = ::GetTickCount64();
+        return 0;
+    } catch (const std::exception& ex)
+    {
+        info.finishTimestamp = ::GetTickCount64();
+        info.errorText = ex.what();
+    }
     return 1;
 }
 
@@ -57,22 +85,16 @@ DWORD ThreadProcCPUandMemory(PVOID parameters)
     ThreadInfo& info = GetThreadInfo(parameters);
 
     try {
-        std::vector<size_t> grid(info.complexity + 1);
+        std::vector<uint8_t> grid(info.complexity + 1, 1);
         info.startTimestamp = ::GetTickCount64();
 
         size_t primes = 0;
-        const size_t gridSize = grid.size();
-        for (size_t i = 0; i < gridSize && !info.stop; ++i)
+        for (size_t p = 2; p < grid.size() && !info.stop; ++p)
         {
-            grid[i] = i;
-        }
-
-        for (size_t p = 2; p < gridSize && !info.stop; ++p)
-        {
-            if (grid[p] != 0)
+            if (grid.at(p) != 0)
             {
                 ++primes;
-                for (size_t j = p * p; j < gridSize; j += p)
+                for (size_t j = 2 * p; j < grid.size(); j += p)
                 { // Mark not prime numbers
                     grid[j] = 0;
                 }
