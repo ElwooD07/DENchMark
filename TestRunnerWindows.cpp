@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "TestRunner.h"
-#include "TestRoutines.h"
+#include "TestRunnerWindows.h"
+#include "TestRoutinesWindows.h"
 #include "ComplexityAndScoreUtils.h"
 
 namespace
@@ -21,8 +21,7 @@ namespace
     }
 }
 
-TestRunner::TestRunner()
-    : m_stop(false)
+TestRunnerWindows::TestRunnerWindows()
 {
     if (!::SetPriorityClass(::GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS))
     {
@@ -30,9 +29,14 @@ TestRunner::TestRunner()
     }
 }
 
-void TestRunner::Go(const TestParameters& parameters)
+TestRunnerWindows::~TestRunnerWindows()
 {
-    std::unique_lock<std::mutex> lock(m_startStopMutex);
+    Stop();
+}
+
+void TestRunnerWindows::Go(const TestParameters& parameters)
+{
+    // TODO: Add mutex between Go and Stop methods
 
     assert(parameters.method != TestMethodUnknown && "Something goes wrong up on stack");
     if (IsRunning())
@@ -76,7 +80,7 @@ void TestRunner::Go(const TestParameters& parameters)
     }
 }
 
-bool TestRunner::IsRunning() const
+bool TestRunnerWindows::IsRunning() const
 {
     for (const ThreadInfo& threadInfo : m_threadsInfo)
     {
@@ -88,32 +92,38 @@ bool TestRunner::IsRunning() const
     return false;
 }
 
-void TestRunner::Stop()
+void TestRunnerWindows::Stop()
 {
-    std::unique_lock<std::mutex> lock(m_startStopMutex);
-
     if (!IsRunning())
     {
         return;
     }
 
     m_stop = true;
-    m_threads.clear();
+    ::WaitForMultipleObjects(static_cast<DWORD>(m_threads.size()), m_threads.data(), TRUE, INFINITE);
+    DeleteThreadObjects();
 }
 
-const ThreadsInfo &TestRunner::GetThreadsInfo() const
-{
-    return m_threadsInfo;
-}
-
-void TestRunner::TerminateThreads() // This is awful idea, I should think a something better
+void TestRunnerWindows::TerminateThreads() // This is awful idea, I should think a something better
 {
     for (size_t i = 0; i < m_threads.size(); ++i)
     {
         if (m_threads[i] != NULL)
         {
             ::TerminateThread(m_threads[i], 1);
-            m_threads[i] = NULL;
         }
     }
+    DeleteThreadObjects();
+}
+
+void TestRunnerWindows::DeleteThreadObjects()
+{
+    for (HANDLE thread : m_threads)
+    {
+        if (thread != NULL)
+        {
+            ::CloseHandle(thread);
+        }
+    }
+    m_threads.clear();
 }

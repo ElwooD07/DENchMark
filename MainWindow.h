@@ -2,7 +2,7 @@
 #include <memory>
 #include <QMainWindow>
 #include "ui_mainwindow.h"
-#include "TestRunner.h"
+#include "TestRunnerWindows.h"
 #include "TestObserver.h"
 #include "TestStateKeeper.h"
 
@@ -12,6 +12,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget* parent);
+    ~MainWindow();
 
 private slots:
     void on_btnGo_clicked();    
@@ -31,7 +32,7 @@ private:
 private:
     std::unique_ptr<Ui::MainWindow> m_ui;
     const size_t m_processorsCount;
-    TestRunner m_testRunner;
+    TestRunnerWindows m_testRunner;
     TestObserver* m_observer;
     TestStateKeeper m_stateKeeper;
 };

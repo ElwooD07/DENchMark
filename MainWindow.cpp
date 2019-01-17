@@ -26,6 +26,16 @@ MainWindow::MainWindow(QWidget *parent)
     m_ui->lblThreads->setText(tr("Threads: %1").arg(m_processorsCount));
 }
 
+MainWindow::~MainWindow()
+{
+    const size_t maxWaitTime = 5000; // ms
+    if (!m_observer->wait(maxWaitTime))
+    {
+        qDebug() << "The observer has to be terminated";
+        m_observer->terminate();
+    }
+}
+
 void MainWindow::on_btnGo_clicked()
 {
     m_ui->listWidget->clear();
@@ -67,6 +77,7 @@ void MainWindow::SetControlsEnabled(bool enabled)
     m_ui->chkBurn->setEnabled(enabled);
     m_ui->optCPU->setEnabled(enabled);
     m_ui->optMemory->setEnabled(enabled);
+    m_ui->optCPUandMemory->setEnabled(enabled);
 }
 
 TestMethod MainWindow::DefineTestMethod() const
@@ -89,8 +100,8 @@ TestMethod MainWindow::DefineTestMethod() const
 
 void MainWindow::RunSingleTest()
 {
-    m_testRunner.Go(TestParameters { m_processorsCount, DefineTestMethod(), utils::CalculateComplexity(), m_ui->chkBurn->isChecked() } );
     SetControlsEnabled(false);
+    m_testRunner.Go(TestParameters { m_processorsCount, DefineTestMethod(), utils::CalculateComplexity(), m_ui->chkBurn->isChecked() } );
     m_observer->start();
 }
 

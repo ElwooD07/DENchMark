@@ -1,5 +1,5 @@
 #pragma once
-#include "TestRunner.h"
+#include "TestRunnerBase.h"
 #include "TestStateKeeper.h"
 #include <QThread>
 #include <vector>
@@ -11,12 +11,12 @@
 class TestObserver: public QThread
 {
 public:
-    TestObserver(QObject* parent, TestRunner* runner);
+    TestObserver(QObject* parent, TestRunnerBase* runner);
     SingleTestResult GetSingleTestResult() const;
 
 protected:
     virtual void run() override;
 
 private:
-    TestRunner *m_runner;
+    TestRunnerBase* m_runner;
 };

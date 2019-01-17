@@ -25,23 +25,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-    TestRoutines.cpp \
     stdafx.cpp \
     TestObserver.cpp \
     MainWindow.cpp \
-    TestRunner.cpp \
     ComplexityAndScoreUtils.cpp \
-    TestStateKeeper.cpp
+    TestStateKeeper.cpp \
+    TestRunnerWindows.cpp \
+    TestRunnerBase.cpp \
+    TestRoutinesWindows.cpp
 
 HEADERS += \
-    TestRoutines.h \
     stdafx.h \
     TestObserver.h \
     MainWindow.h \
-    TestRunner.h \
     ComplexityAndScoreUtils.h \
     TestInfo.h \
-    TestStateKeeper.h
+    TestStateKeeper.h \
+    TestRunnerWindows.h \
+    TestRunnerBase.h \
+    TestRoutinesWindows.h
 
 FORMS += \
         mainwindow.ui

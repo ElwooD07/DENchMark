@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "TestObserver.h"
 
-TestObserver::TestObserver(QObject *parent, TestRunner* runner)
+TestObserver::TestObserver(QObject *parent, TestRunnerBase* runner)
     : QThread(parent)
     , m_runner(runner)
 {

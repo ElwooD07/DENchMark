@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "TestRoutines.h"
+#include "TestRoutinesWindows.h"
 #include "TestInfo.h"
 
 namespace
@@ -49,13 +49,19 @@ DWORD ThreadProcCPU(PVOID parameters)
 
 DWORD ThreadProcMemory(PVOID parameters)
 {
+#ifdef _DEBUG
+    static const size_t s_iterationsCount = 3;
+#else
+    static const size_t s_iterationsCount = 30;
+#endif
+
     ThreadInfo& info = GetThreadInfo(parameters);
 
     try
     {
         info.startTimestamp = ::GetTickCount64();
 
-        for (size_t iteration = 0; iteration < 4; ++iteration)
+        for (size_t iteration = 0; iteration < s_iterationsCount && !info.stop; ++iteration)
         {
             std::vector<int32_t> vec1, vec2;
             vec1.resize(info.complexity);

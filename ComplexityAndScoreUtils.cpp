@@ -15,9 +15,9 @@ double utils::GetTestMethodComplexityRatio(TestMethod method)
     case TestMethodCPU:
         return 1;
     case TestMethodMemory:
-        return 100;
+        return 150;
     case TestMethodCPUandMemory:
-        return 300;
+        return 800;
     default:
         assert("Unknown test method");
         return 1;
